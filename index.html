@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel's Awesome Website</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #000 25%, #fff 25%, #fff 50%, #000 50%, #000 75%, #fff 75%, #fff);
+            background-size: 100px 100px;
+            animation: moveBackground 8s linear infinite;
+            z-index: -1;
+            transition: all 0.5s ease;
+        }
+
+        @keyframes moveBackground {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .youtube-logo {
+            width: 200px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        #mute {
+            background: linear-gradient(45deg, #333, #555);
+        }
+
+        .music-info {
+            color: white;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .volume-slider {
+            width: 100%;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    
+    <div class="container">
+        <img src="https://www.youtube.com/img/desktop/yt_1200.png" alt="YouTube Logo" class="youtube-logo">
+        
+        <div class="buttons">
+            <button id="clickMe">Click Me</button>
+            <button id="join">Join Discord</button>
+            <button id="scripts">Scripts</button>
+            <button id="mute">Mute</button>
+        </div>
+
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30">
+        <div class="music-info">Now Playing: LAKEY INSPIRED - Blue Boi</div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_2b8cd3f816.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const music = document.getElementById('bgMusic');
+            const muteButton = document.getElementById('mute');
+            const clickMeButton = document.getElementById('clickMe');
+            const joinButton = document.getElementById('join');
+            const volumeSlider = document.getElementById('volumeSlider');
+            let isWhiteBackground = false;
+            
+            // Set initial volume
+            music.volume = 0.3;
+            
+            // Start playing music with user interaction
+            document.body.addEventListener('click', function() {
+                music.play().catch(function(error) {
+                    console.log("Audio playback failed:", error);
+                });
+            }, { once: true });
+
+            // Background color toggle with smooth transition
+            document.querySelector('.background').addEventListener('click', function() {
+                this.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    if (isWhiteBackground) {
+                        this.style.background = 'linear-gradient(45deg, #000 25%, #fff 25%, #fff 50%, #000 50%, #000 75%, #fff 75%, #fff)';
+                    } else {
+                        this.style.background = 'linear-gradient(45deg, #fff 25%, #000 25%, #000 50%, #fff 50%, #fff 75%, #000 75%, #000)';
+                    }
+                    this.style.transform = 'scale(1)';
+                    isWhiteBackground = !isWhiteBackground;
+                }, 150);
+            });
+
+            // Volume slider
+            volumeSlider.addEventListener('input', function() {
+                music.volume = this.value / 100;
+            });
+
+            // Mute button with animation
+            muteButton.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => this.style.transform = 'scale(1)', 100);
+                
+                if (music.muted) {
+                    music.muted = false;
+                    this.textContent = 'Mute';
+                    this.style.background = 'linear-gradient(45deg, #333, #555)';
+                } else {
+                    music.muted = true;
+                    this.textContent = 'Unmute';
+                    this.style.background = 'linear-gradient(45deg, #555, #777)';
+                }
+            });
+
+            // Click Me button - Updated YouTube link
+            clickMeButton.addEventListener('click', function(e) {
+                window.open('https://www.youtube.com/@pixel-xf', '_blank');
+            });
+
+            // Join button
+            joinButton.addEventListener('click', function(e) {
+                window.open('https://discord.gg/faryJdBH', '_blank');
+            });
+
+            // Add hover animation to all buttons
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('mouseover', function() {
+                    this.style.transform = 'translateY(-3px)';
+                });
+                
+                button.addEventListener('mouseout', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
